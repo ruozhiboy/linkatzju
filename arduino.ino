@@ -1,10 +1,10 @@
 /******************************************************
-*This is belonging to WCJDEMO PROJECT for connecting to SAE server
+*A simple IoT project nameed linkatzju
 *
 *Output Variables:
 *int Temperture,int Humidity,boolean Windowstatus,boolean Ledstatus
 *Input Variables: 
-*boolean led
+*Int led
 *
 *Parts we need:
 *Arduino UNO R3 or other shield like this
@@ -27,11 +27,11 @@
 #include "utility/debug.h"
 
 //about CC3000
-#define WiDo_IRQ   3
-#define WiDo_VBAT  5
-#define WiDo_CS    10
+#define IRQ   3
+#define VBAT  5
+#define CS    10
 
-Adafruit_CC3000 WiDo = Adafruit_CC3000(WiDo_CS, WiDo_IRQ, WiDo_VBAT,
+Adafruit_CC3000 CC3000 = Adafruit_CC3000(CS, IRQ, VBAT,
 SPI_CLOCK_DIVIDER); // you can change this clock speed
 
 #define WLAN_SSID       "123"           // cannot be longer than 32 characters!
@@ -55,22 +55,18 @@ int Ledstatus=0;  //0 led turned off 1 led turned on
 
 int Led=0; //0 to turn off led 1 to turn on led 
 char clientString[150];
-#define TOKEN           "myarduino"  //attach your own token generated from the DFRobot community website
-
-// To get the full feature of CC3000 library from Adafruit, please comment the define command below
-// #define CC3000_TINY_DRIVER    // saving the flash memory space for leonardo
 
 #define TIMEOUT_MS      2000
 
 void setup(){
   Serial.begin(115200);
-  Serial.println(F("Hello, Wido!\n")); 
+  Serial.println(F("Hello, LINKATZJU!\n")); 
 
   /* Initialise the module and test the hardware connection */
   Serial.println(F("\nInitialising the CC3000 ..."));
-  if (!WiDo.begin())
+  if (!CC3000.begin())
   {
-    Serial.println(F("Unable to initialise the CC3000! Check your wiring?"));
+    Serial.println(F("Unable to initialise the CC3000! Check your wiring..."));
     while(1);
   }
 
@@ -78,8 +74,8 @@ void setup(){
    By default connectToAP will retry indefinitely, however you can pass an
    optional maximum number of retries (greater than zero) as the fourth parameter.
    */
-  if (!WiDo.connectToAP(WLAN_SSID,WLAN_PASS,WLAN_SECURITY)) {
-    Serial.println(F("Failed!"));
+  if (!CC3000.connectToAP(WLAN_SSID,WLAN_PASS,WLAN_SECURITY)) {
+    Serial.println(F("Failed to connect WIFI!"));
     while(1);
   }
 
@@ -87,7 +83,7 @@ void setup(){
 
   /* Wait for DHCP to complete */
   Serial.println(F("Request DHCP"));
-  while (!WiDo.checkDHCP())
+  while (!CC3000.checkDHCP())
   {
     delay(100); // ToDo: Insert a DHCP timeout!
   }  
@@ -113,7 +109,7 @@ void loop(){
     
     /* to print temperature and humidity */
     Serial.println("=====================================");
-    Serial.print(":\ttemerature:");
+    Serial.print("||\ttemperature:");
     Serial.print(TEMP_AND_HUMI.temperature);
     Serial.print("\thumidity:");
     Serial.println(TEMP_AND_HUMI.humidity);
@@ -121,8 +117,7 @@ void loop(){
  
   if(IoTclient.connected()){
     strcpy(clientString,"");
-    //sprintf(clientString,"%s%d%s%d%s%d","GET /1.php?abc=",abc,"&bcd=",bcd,"&cde=",cde);
-    sprintf(clientString,"%s%s%s%d%s%d%s%d%s%d","GET /arduino.php?token=",TOKEN,"&Temperature=",Temperature,"&Humidity=",Humidity,"&Windowstatus=",Windowstatus,"&Ledstatus=",Ledstatus);
+    sprintf(clientString,"%s%d%s%d%s%d%s%d","GET /arduino.php?Temperature=",Temperature,"&Humidity=",Humidity,"&Windowstatus=",Windowstatus,"&Ledstatus=",Ledstatus);
     Serial.println(clientString);
     
     // attach the token to the IOT Server and Upload the sensor dataIoTclient
@@ -151,13 +146,13 @@ void loop(){
     IoTclient.close();
   }
   else{
-    // Config the Host IP and DFRobot community IoT service port
-    // Data Upload service PORT:  8124
-    // Real time controling service PORT: 9120
-    uint32_t ip = WiDo.IP2U32(120,26,103,180);
-    IoTclient = WiDo.connectTCP(ip,80);
+    // Config the Host IP and IoT service port
+    // Data Upload service PORT:  80
+    uint32_t ip = CC3000.IP2U32(120,26,103,180);
+    IoTclient = CC3000.connectTCP(ip,80);
     Serial.println("Connecting IoT Server...");
   }
+  
   //to switch led according orders
   if(Led=='0'){
     digitalWrite(LEDPIN,LOW);
@@ -167,9 +162,7 @@ void loop(){
     digitalWrite(LEDPIN,HIGH);
     Serial.println("LEDPIN=HIGH");
     Ledstatus=1;
-  }
-  
+  }  
   delay(1000);
-
 }
 
