@@ -1,7 +1,7 @@
 <?php
 	ignore_user_abort(); 	//即使Client断开(如关掉浏览器)，PHP脚本也可以继续执行.
 	set_time_limit(0); // 执行时间为无限制，php默认执行时间是30秒，可以让程序无限制的执行下去
-	$interval=5*60; // 每隔一天运行一次
+	$interval=10*60; // 每隔一天运行一次
 	do{
 		sleep($interval); // 按设置的时间等待一小时循环执行
 		$link=mysql_connect("localhost","root","dHIoPOi7Ej3n");
@@ -18,13 +18,15 @@
 		//如果窗户有人，则发送邮件
 		if($Windowstatus==1)
 		{
-			$to='wcj.zju@foxmail.com';
-			$subject='安全警告！';
-			$body='有人从家里窗户边经过，请注意安全！
-										
-									--sent from arduino';
-			mail($to,$subject,$body);
+			$to = "wcj.zju@foxmail.com";
+			$subject = "安全警告！";
+			$message = "警告！窗户边有人经过，请注意。";
+			$from = "linkatzju@arduino.com";
+			$headers = "From: $from";
+			mail($to,$subject,$message,$headers);
+			echo "Mail Sent.";
 		}
 		mysql_close($link);
+		sleep(60);
 	}while(true);
 ?>
