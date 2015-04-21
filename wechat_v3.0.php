@@ -7,7 +7,7 @@
 define("TOKEN", "weixin");
 $wechatObj = new wechat();
 //$wechatObj->valid();		//只用来和微信验证token，之后需要注释掉
-$wechatObj->vaildmail();
+//$wechatObj->vaildmail();	//只需要一次激活
 $wechatObj->responseMsg();
 
 class wechat
