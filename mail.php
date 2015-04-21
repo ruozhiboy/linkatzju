@@ -18,10 +18,13 @@
 		//如果窗户有人，则发送邮件
 		if($Windowstatus==1)
 		{
-			$to='wcj.zju@foxmail.com';
-			$subject='安全警告！';
-			$body='有人从家里窗户边经过，请注意安全！\r\n--sent from arduino';
-			mail($to,$subject,$body);
+			$to = "wcj.zju@foxmail.com";
+			$subject = "安全警告！";
+			$message = "警告！窗户边有人经过，请注意。";
+			$from = "linkatzju@arduino.com";
+			$headers = "From: $from";
+			mail($to,$subject,$message,$headers);
+			echo "Mail Sent.";
 		}
 		mysql_close($link);
 	}while(true);
