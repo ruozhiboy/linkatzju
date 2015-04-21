@@ -20,7 +20,9 @@
 		{
 			$to='wcj.zju@foxmail.com';
 			$subject='安全警告！';
-			$body='有人从家里窗户边经过，请注意安全！\r\n--sent from arduino';
+			$body='有人从家里窗户边经过，请注意安全！
+										
+									--sent from arduino';
 			mail($to,$subject,$body);
 		}
 		mysql_close($link);
