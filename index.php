@@ -47,7 +47,7 @@ img{
 	padding: 6px 68px 0 68px;
 }
 .ce{
-	font-family:Arial, Helvetica, sans-serif; font-weight:bolder;font-size:18px;color:#A2CD5A;height:72px;text-align: center;
+	font-family:Arial, Helvetica, sans-serif; font-weight:bolder;font-size:12px;color:#A2CD5A;height:72px;text-align: center;
 }
 </style>
 </head>
@@ -72,7 +72,7 @@ img{
        		else
        		{
        			echo "<input name=\"openid\" value=\"openid\" class=\"ur\" />";
-       			echo "<p class=\"ce\"><input type=\"radio\" name=\"ctruser\" value=\"add\" class=\"ce\"/>ADD USER&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"ctruser\" value=\"delete\" class=\"ce\"/>DELETE USER</p>";
+       			echo "<p class=\"ce\"><input type=\"radio\" name=\"ctruser\" value=\"add\" class=\"ce\"/>ADD USER&nbsp;<input type=\"radio\" name=\"ctruser\" value=\"delete\" class=\"ce\"/>DELETE USER<input type=\"radio\" name=\"ctruser\" value=\"allusers\" class=\"ce\" checked=\"checked\" />ALL USERS</p>";
        		}
        	?>
         </div>

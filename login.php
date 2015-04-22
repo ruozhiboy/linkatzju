@@ -41,13 +41,13 @@
 			
 			if(empty($username))
 			{
-				$error[]='忘记写名字啦';
+				$error[]="Forget Your Name!";
 				return $error;
 			}	
 			
 			else if(empty($password))
 			{
-				$error[]='忘记填密码啦';
+				$error[]="Forget Your Password!";
 				return $error;
 			}
 			else
@@ -56,7 +56,7 @@
 					return 1;
 				else
 				{
-					$error[]="密码或者名字错误！";
+					$error[]="Wrong Name or Password!";
 					return $error;
 				}
 			}

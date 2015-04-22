@@ -56,6 +56,9 @@ img{
 .ce{
 	font-family:Arial, Helvetica, sans-serif; font-weight:bolder;font-size:18px;color:#A2CD5A;height:72px;text-align: center;
 }
+.be{
+	font-family:Arial, Helvetica, sans-serif; font-weight:bolder;font-size:18px;color:#A2CD5A;height:50px;text-align: center;align:center;
+}
 </style>
 </head>
 <body class="b">
@@ -68,8 +71,7 @@ img{
        		{
        			$openid=$_POST['openid'];
        			$ctruser=$_POST['ctruser'];
-       			if(isset($openid)&&isset($ctruser))
-       			{
+
 	       			//连接数据库
 	       			$link=mysql_connect("localhost","root","dHIoPOi7Ej3n");
 	       			mysql_select_db("app_wcjdemo",$link);    //选择数据库
@@ -86,12 +88,16 @@ img{
 
 		       			if($ctruser=='add')
 		       			{
-		       				$sql="INSERT INTO users (Openid,Time) VALUES ('$openid','$nowtime')";
-		       				if(!mysql_query($sql,$link)){
-		       				die('Error:'.mysql_error());
+		       				if(!$Id)
+		       				{
+			       				$sql="INSERT INTO users (Openid,Time) VALUES ('$openid','$nowtime')";
+			       				if(!mysql_query($sql,$link)){
+			       				die('Error:'.mysql_error());
+			       				}
+			       				echo "<br><br><br><p class=\"ce\">操作成功！</p>";
 		       				}
-		       				echo "<br><br><br><p class=\"ce\">操作成功！</p>";
-		       			
+		       				else
+		       					echo "<br><br><br><p class=\"ce\">此用户已存在！</p>";
 		       			}
 		       			else if($ctruser=='delete')
 		       			{
@@ -108,10 +114,25 @@ img{
 		       					echo "<br><br><br><p class=\"ce\">没有此用户！</p>";
 		       			}
 		       			
-       			}
-       			else
-       				echo "<br><br><br><p class=\"ce\">请输入openid或者选择操作！</p>";
-	       			
+    
+       					else if($ctruser=="allusers")
+       					{
+       						$link=mysql_connect("localhost","root","dHIoPOi7Ej3n");
+							mysql_select_db("app_wcjdemo",$link);
+						
+							$result=mysql_query("SELECT * FROM users");
+							echo "<br><br><br><select class=\"be\">";
+							while($row = mysql_fetch_array($result))
+							{
+						  		echo "<option>".$row['Openid']."</option>";
+							}
+							echo "</select>";
+							mysql_close($con);
+       					
+       					}
+       					
+       					else
+       						echo "<br><br><br><p class=\"ce\">请输入openid！</p>";
        		}
        	?>
         </div>
