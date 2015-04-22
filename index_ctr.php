@@ -83,21 +83,30 @@ img{
 	       					$Id=$result_array['Id'];
 	       				}
 	       			}
-	       			if($Id)
-	       			{
+
 		       			if($ctruser=='add')
+		       			{
 		       				$sql="UDATE users SET Openid='$openid',Time='$nowtime'";
-		       			else if($ctruser=='delete')
-		       				$sql="DELETE FROM users WHERE Openid='$openid'";
-		       			
-		       			if(!mysql_query($sql,$link)){
+		       				if(!mysql_query($sql,$link)){
 		       				die('Error:'.mysql_error());
-		       			}
-		       			echo "<br><br><br><p class=\"ce\">操作成功！</p>";
+		       				}
+		       				echo "<br><br><br><p class=\"ce\">操作成功！</p>";
 		       			
-	       			}
-	       			else
-	       				echo "<br><br><br><p class=\"ce\">没有此用户！</p>";
+		       			}
+		       			else if($ctruser=='delete')
+		       			{
+		       				if($Id)
+		       				{
+		       					$sql="DELETE FROM users WHERE Openid='$openid'";
+		       					if(!mysql_query($sql,$link)){
+		       						die('Error:'.mysql_error());
+		       					}
+		       					echo "<br><br><br><p class=\"ce\">操作成功！</p>";
+		       			
+		       				}
+		       				else
+		       					echo "<br><br><br><p class=\"ce\">没有此用户！</p>";
+		       			}
 		       			
        			}
        			else
