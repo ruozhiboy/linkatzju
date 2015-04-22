@@ -108,7 +108,7 @@ img{
         </div>
     </div>
     <div class="lg_foot">
-    <button onclick="location.href='../index.php'" class="bn" >返回</button></div>
+    <button onclick="location.href='../login/index.php'" class="bn" >返回</button></div>
 </div>
 </body>
 </html>
