@@ -7,6 +7,7 @@
 define("TOKEN", "weixin");
 $wechatObj = new wechat();
 //$wechatObj->valid();		//只用来和微信验证token，之后需要注释掉
+//$wechatObj->vaildmail();	//只需要一次激活
 $wechatObj->responseMsg();
 
 class wechat
@@ -71,48 +72,62 @@ class wechat
 						<Content><![CDATA[%s]]></Content>
 						<FuncFlag>0</FuncFlag>
 						</xml>";  //定义文本信息的xml格式
-	
-			//如果输入的是文本
-			if($msgType=="text"){
-				$keyword = trim($postObj->Content);
-				$time = time();
-				$this->textandvoice($textTpl,$fromUsername,$toUsername,$keyword,$time);
-			}
-			//如果输入的是语音
-			else if($msgType=="voice"){
-				$keyword = trim($postObj->Recognition);
-				$time = time();
-				$this->textandvoice($textTpl,$fromUsername,$toUsername,$keyword,$time);
-			}
-			//如果是关注和取消关注事件
-			else if($msgType=="event"){
-				$msgTypeEvent=$postObj->Event;
-				if($msgTypeEvent=='subscribe'){
+
+			$flag=$this->testname($fromUsername);
+			//判断微信的openid是否被认证
+			//如果被认证
+			if($flag)
+			{
+				//如果输入的是文本
+				if($msgType=="text"){
+					$keyword = trim($postObj->Content);
 					$time = time();
-					$msgType = "text";
-					$contentStr = '欢迎来到王传军写字的地方，不保证不会五毛，不保证政治正确，不保证不会乱扯，不定时更新，对我不要有期待哟！';
-					$resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
-					echo $resultStr;
+					$this->textandvoice($textTpl,$fromUsername,$toUsername,$keyword,$time);
 				}
+				//如果输入的是语音
+				else if($msgType=="voice"){
+					$keyword = trim($postObj->Recognition);
+					$time = time();
+					$this->textandvoice($textTpl,$fromUsername,$toUsername,$keyword,$time);
+				}
+				//如果是关注和取消关注事件
+				else if($msgType=="event"){
+					$msgTypeEvent=$postObj->Event;
+					if($msgTypeEvent=='subscribe'){
+						$time = time();
+						$msgType = "text";
+						$contentStr = '欢迎来到王传军写字的地方，不保证不会五毛，不保证政治正确，不保证不会乱扯，不定时更新，对我不要有期待哟！';
+						$resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
+						echo $resultStr;
+					}
+					else{
+						$time = time();
+						$msgType = "text";
+						$contentStr = '人生就是人与人谈恋爱，总是遇见与分开，遇见之时切莫热切，分开之时也勿拉扯~感谢对我的支持，再见，有缘再见！';
+						$resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
+						echo $resultStr;
+					}
+					exit;
+				}
+				//不支持其他类型的输入
 				else{
 					$time = time();
 					$msgType = "text";
-					$contentStr = '人生就是人与人谈恋爱，总是遇见与分开，遇见之时切莫热切，分开之时也勿拉扯~感谢对我的支持，再见，有缘再见！';
+					$contentStr = '目前不支持除文本以外的其他输入类型！';
 					$resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
 					echo $resultStr;
+					exit;
 				}
-				exit;
 			}
-			//不支持其他类型的输入
-			else{
+			//如果没有经过认证
+			else
+			{
 				$time = time();
 				$msgType = "text";
-				$contentStr = '目前不支持除文本以外的其他输入类型！';
+				$contentStr = "大王，你尚未授权访问此项目！你可以发送你的open_id(".$fromUsername.")到邮箱wcj.zju@hotmail.com申请访问权限。";
 				$resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
 				echo $resultStr;
-				exit;
 			}
-	
 		}
 		else {
 			echo "";
@@ -123,7 +138,31 @@ class wechat
 	private function textandvoice($textTpl,$fromUsername,$toUsername,$keyword,$time)
 	{
 		$msgType='text';
-	
+		/* 管理 */
+		if(strstr($keyword, '管理')){
+			$newsTpl="<xml>
+					 <ToUserName><![CDATA[%s]]></ToUserName>
+					 <FromUserName><![CDATA[%s]]></FromUserName>
+					 <CreateTime>%s</CreateTime>
+					 <MsgType><![CDATA[news]]></MsgType>
+					 <ArticleCount>1</ArticleCount>
+					 <Articles>
+					 <item>
+					 <Title><![CDATA[%s]]></Title> 
+					 <Description><![CDATA[%s]]></Description>
+					 <PicUrl><![CDATA[%s]]></PicUrl>
+					 <Url><![CDATA[%s]]></Url>
+					 </item>
+					 </Articles>
+					 </xml> ";
+			$title='linkatzju后台管理系统';
+			$description='';
+			$picurl='http://120.26.103.180/login/images/wechat.png';
+			$url='http://120.26.103.180/login/login.html';
+			$resultStr = sprintf($newsTpl, $fromUsername, $toUsername, $time, $title, $description,$picurl,$url);
+			echo $resultStr;
+		}
+		
 		/* 温度 */
 		if(strstr($keyword,'温度')){
 			$link=mysql_connect("localhost","root","dHIoPOi7Ej3n");
@@ -136,7 +175,8 @@ class wechat
 					$Temperature=$result_array['Temperature'];
 				}
 			}
-	
+			
+			mysql_close($link);
 			//输出回应
 			$contentStr="报告大王，现在温度为：".$Temperature."℃";
 			$resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
@@ -155,7 +195,8 @@ class wechat
 					$Humidity=$result_array['Humidity'];
 				}
 			}
-	
+			
+			mysql_close($link);
 			//输出回应
 			$contentStr="报告大王，现在湿度为：".$Humidity."%";
 			$resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
@@ -174,7 +215,7 @@ class wechat
 					$Ledstatus=$result_array['Ledstatus'];
 				}
 			}
-	
+			
 			//开灯指令
 			if($Ledstatus==1){
 				//输出回应
@@ -193,6 +234,8 @@ class wechat
 				$resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
 				echo $resultStr;
 			}
+			
+			mysql_close($link);
 		}
 	
 		/* 关灯 */
@@ -226,6 +269,8 @@ class wechat
 				$resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
 				echo $resultStr;
 			}
+			
+			mysql_close($link);
 		}
 	
 		/* 查看窗户是否有人 */
@@ -240,7 +285,8 @@ class wechat
 					$Windowstatus=$result_array['Windowstatus'];
 				}
 			}
-	
+			
+			mysql_close($link);
 			if($Windowstatus==1){
 				//输出回应
 				$contentStr="报告大王，您的窗户上有人经过，请小心小偷！";
@@ -260,6 +306,34 @@ class wechat
 		}
 	}
 	
+	//验证
+	private function testname($fromUsername)
+	{
+		$link=mysql_connect("localhost","root","dHIoPOi7Ej3n");
+		mysql_select_db("app_wcjdemo",$link);    //选择数据库
+	
+		//查找温度值
+		$result=mysql_query("SELECT * FROM users");
+		while($result_array=mysql_fetch_array($result)){
+			if($result_array['Openid']==$fromUsername){
+				$Id=$result_array['Id'];
+				}
+			}
+			
+		mysql_close($link);
+		if($Id)
+			$flag=1;
+		else
+			$flag=0;
+		
+		return $flag;
+	}
+
+	public function vaildmail()
+	{
+		$url='http://120.26.103.180/mail.php';
+		file_get_contents($url);
+	}
 }
 
 ?>

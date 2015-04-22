@@ -1,7 +1,7 @@
 <?php
 	ignore_user_abort(); 	//即使Client断开(如关掉浏览器)，PHP脚本也可以继续执行.
 	set_time_limit(0); // 执行时间为无限制，php默认执行时间是30秒，可以让程序无限制的执行下去
-	$interval=10*60; // 每隔一天运行一次
+	$interval=10*60; // 每隔10‘运行一次
 	do{
 		sleep($interval); // 按设置的时间等待一小时循环执行
 		$link=mysql_connect("localhost","root","dHIoPOi7Ej3n");
@@ -27,6 +27,6 @@
 			echo "Mail Sent.";
 		}
 		mysql_close($link);
-		sleep(60);
+		sleep(120);
 	}while(true);
 ?>

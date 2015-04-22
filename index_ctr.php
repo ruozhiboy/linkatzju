@@ -86,7 +86,7 @@ img{
 
 		       			if($ctruser=='add')
 		       			{
-		       				$sql="UPDATE users SET Openid='$openid',Time='$nowtime'";
+		       				$sql="INSERT INTO users (Openid,Time) VALUES ('$openid','$nowtime')";
 		       				if(!mysql_query($sql,$link)){
 		       				die('Error:'.mysql_error());
 		       				}
