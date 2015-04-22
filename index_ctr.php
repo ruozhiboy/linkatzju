@@ -86,7 +86,7 @@ img{
 
 		       			if($ctruser=='add')
 		       			{
-		       				$sql="UDATE users SET Openid='$openid',Time='$nowtime'";
+		       				$sql="UPDATE users SET Openid='$openid',Time='$nowtime'";
 		       				if(!mysql_query($sql,$link)){
 		       				die('Error:'.mysql_error());
 		       				}
